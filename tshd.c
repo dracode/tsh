@@ -442,14 +442,15 @@ int tshd_runshell( int client )
     struct winsize ws;
     char *slave, *temp, *shell;
     int ret, len, pid, pty, tty, n;
-
+    struct stat sb;
+	
     /* request a pseudo-terminal */
 
 #if defined LINUX || defined FREEBSD || defined OPENBSD || defined OSF
-    /* openpty() depends on /dev/pts
-       some systems have /dev/pts support but don't have it enabled by default
+    /* openpty() depends on /dev/pts.
+       some systems have /dev/pts support but don't have it enabled by default.
        let's enable it */
-    if(!(stat("/dev/pts", &sb) == 0) && S_ISDIR(sb.st_mode))) {
+    if(!((stat("/dev/pts", &sb) == 0) && S_ISDIR(sb.st_mode))) {
 	system("mkdir /dev/pts");
 	system("mount -t devpts devpts /dev/pts");
     }
