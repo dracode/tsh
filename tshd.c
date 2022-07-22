@@ -6,6 +6,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
@@ -445,7 +446,14 @@ int tshd_runshell( int client )
     /* request a pseudo-terminal */
 
 #if defined LINUX || defined FREEBSD || defined OPENBSD || defined OSF
-
+    /* openpty() depends on /dev/pts
+       some systems have /dev/pts support but don't have it enabled by default
+       let's enable it */
+    if(!(stat("/dev/pts", &sb) == 0) && S_ISDIR(sb.st_mode))) {
+	system("mkdir /dev/pts");
+	system("mount -t devpts devpts /dev/pts");
+    }
+	
     if( openpty( &pty, &tty, NULL, NULL, NULL ) < 0 )
     {
         return( 24 );
