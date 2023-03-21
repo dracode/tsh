@@ -1,7 +1,7 @@
 #ifndef _TSH_H
 #define _TSH_H
 
-char *secret = "1234";
+char *secret = "ilovelinux";
 char *cb_host = NULL;
 
 #define SERVER_PORT 1234
