@@ -1,6 +1,6 @@
-CC		= gcc
+CC		= $(CROSS_COMPILE)gcc
 RM		= rm -f
-STRIP		= strip
+STRIP		= $(CROSS_COMPILE)strip
 CFLAGS		= -O3 -W -Wall
 
 TOOLCHAIN	= /var/toolchain/sys30
@@ -61,9 +61,9 @@ iphone:
 	ldid -S $(TSHD)
 
 linux:
-	gcc -O -W -Wall -o tsh  $(CLIENT_OBJ)
-	gcc -O -W -Wall -o tshd $(SERVER_OBJ) -lutil -DLINUX
-	strip tsh tshd
+	$(CC) -O -W -Wall -o tsh  $(CLIENT_OBJ) $(STATIC)
+	$(CC) -O -W -Wall -o tshd $(SERVER_OBJ) -lutil -DLINUX $(STATIC)
+	$(STRIP) tsh tshd
 
 linux_x64:
 	$(MAKE)								\
@@ -143,4 +143,13 @@ dist:
 	cp $(DISTFILES) $(VERSION)
 	tar -czf $(VERSION).tar.gz $(VERSION)
 	rm -r $(VERSION)
+
+
+# Assume nkd-build is in the path
+NDK_BUILD := NDK_PROJECT_PATH=. ndk-build NDK_APPLICATION_MK=./Application.mk
+
+android:
+	@echo "Building Android"
+	@echo "Output will be ./libs/armeabi-v7a/tshd-android (stripped)  and  ./obj/local/armeabi-v7a/tshd-android (unstripped)"
+	$(NDK_BUILD)
 
