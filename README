@@ -19,7 +19,7 @@
     * Compiling Tiny SHell
 
         Run "make <system>", where <system> can be any one of these:
-        linux, freebsd, openbsd, netbsd, cygwin, sunos, irix, hpux, osf
+        linux, freebsd, openbsd, netbsd, cygwin, sunos, irix, hpux, osf, android
 
     * How to use the server
 
@@ -70,4 +70,10 @@
         that no one except you has read access to these two files.
         However, you may choose not to store the real (valid) key in
         the client, which will then ask for a password when it starts.
+
+    * For Android
+
+	Tested with Android NDK r25.
+	PATH=$PATH:~/android-ndk-r25/ make android
+
 

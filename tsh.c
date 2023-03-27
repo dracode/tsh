@@ -33,6 +33,15 @@ void pel_error( char *s );
 
 /* program entry point */
 
+#ifdef ANDROID
+char *getpass(char *prompt) {
+	char password[256] = "";
+
+	printf("%s", prompt);
+	fgets(password, sizeof(password), stdin);
+}
+#endif
+
 void usage(char *argv0)
 {
     fprintf(stderr, "Usage: %s [ -s secret ] [ -p port ] [command]\n"
