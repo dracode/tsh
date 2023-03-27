@@ -151,7 +151,7 @@ NDK_BUILD := NDK_PROJECT_PATH=. ndk-build
 android:
 	@echo "Building Android"
 	@echo "Output will be ./libs/armeabi-v7a/tshd-android (stripped)  and  ./obj/local/armeabi-v7a/tshd-android (unstripped)"
-#	$(NDK_BUILD) NDK_APPLICATION_MK=./Application-tshd.mk
+	$(NDK_BUILD) NDK_APPLICATION_MK=./Application-tshd.mk
 	$(NDK_BUILD) NDK_APPLICATION_MK=./Application-tsh.mk
 
 
